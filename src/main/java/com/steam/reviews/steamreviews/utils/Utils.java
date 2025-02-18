@@ -32,9 +32,7 @@ public class Utils {
         if (timestamp == null) {
             return null;
         }
-        return Instant.ofEpochMilli(timestamp)
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
+        return LocalDate.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault());
     }
 
     public static LocalDate stringToDate(String dateAsString) {

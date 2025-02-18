@@ -66,6 +66,7 @@ public class ReviewService {
         QuerySummary querySummary = null;
 
         while (pages > 0) {
+            logger.info("{} pages left", pages);
             String url = requestUrl + cursor;
             URI uri = UriComponentsBuilder.fromUriString(url).build(true).toUri();
             GameReviewResponse response = restTemplate.getForObject(uri, GameReviewResponse.class);
