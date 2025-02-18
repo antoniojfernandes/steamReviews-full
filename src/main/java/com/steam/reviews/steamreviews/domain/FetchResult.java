@@ -2,10 +2,11 @@ package com.steam.reviews.steamreviews.domain;
 
 import lombok.Getter;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Getter
-public class FetchResult {
+public class FetchResult  implements Serializable {
     private final List<Review> reviews;
     private final QuerySummary querySummary;
 

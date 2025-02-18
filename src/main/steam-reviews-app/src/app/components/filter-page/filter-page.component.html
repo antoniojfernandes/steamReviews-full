@@ -11,9 +11,17 @@
         (click)="toggleSelection(criteria)"
         [ngClass]="{'selected': isSelected(criteria)}"
         class="criteria-button">
-        {{criteria}}
+        {{ criteria }}
       </button>
     </div>
+  </div>
+  <div class="select-all">
+    <button
+      (click)="selectAll()"
+      [ngClass]="{'selected': allSelected()}"
+      class="criteria-button">
+      SELECT ALL
+    </button>
   </div>
 </div>
 <div class="back">

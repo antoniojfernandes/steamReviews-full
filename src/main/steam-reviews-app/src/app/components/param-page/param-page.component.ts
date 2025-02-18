@@ -2,23 +2,46 @@ import {Component} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {DataService} from '../../services/data-service';
 import {BackgroundComponent} from '../background/background.component';
-import {NgClass, NgForOf} from '@angular/common';
+import {CommonModule, NgClass, NgForOf} from '@angular/common';
 import {ActivatedRoute, RouterLink} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {ReviewService} from '../../services/review-service';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 
 @Component({
   selector: 'app-param-page',
   imports: [
     BackgroundComponent,
-    NgForOf,
     RouterLink,
     NgClass,
-    FormsModule
+    FormsModule,
+    CommonModule,
+    MatDatepickerModule,
+    MatInputModule,
+    MatNativeDateModule,
   ],
   templateUrl: './param-page.component.html',
   standalone: true,
-  styleUrl: './param-page.component.css'
+  styleUrl: './param-page.component.css',
+  animations: [
+    trigger('transformPanel', [
+      state('void', style({
+        opacity: 1,
+        transform: 'scale(0.95)',
+        backgroundColor: 'white', // White background
+      })),
+      state('*', style({
+        opacity: 1,
+        transform: 'scale(1)',
+        backgroundColor: 'white', // White background
+      })),
+      transition('void => *', animate('100ms ease-in')),
+      transition('* => void', animate('100ms ease-out')),
+    ]),
+  ],
 })
 export class ParamPageComponent {
   criteriaList: string[] = [];
@@ -39,7 +62,7 @@ export class ParamPageComponent {
     {value: 'english', display: 'English'},
   ];
 
-  selectedreviewType = "all";
+  selectedReviewType = "all";
   reviewTypes = [
     {value: 'all', display: 'All'},
     {value: 'positive', display: 'Positive'},
@@ -47,10 +70,14 @@ export class ParamPageComponent {
   ];
   pages: number = 1;
   minChars: number = 0;
-  maxChars: number = 0;
+  maxChars: number = -1;
+  startDate: Date = new Date();
+  endDate: Date = new Date();
 
   constructor(private dataService: DataService, private route: ActivatedRoute, private reviewDownloadService: ReviewService) {
   }
+
+
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -75,10 +102,12 @@ export class ParamPageComponent {
         this.criteriaList,
         this.selectedLang,
         this.selectedFilter,
-        this.selectedreviewType,
+        this.selectedReviewType,
         this.minChars,
         this.maxChars,
-        this.pages
+        this.pages,
+        this.startDate,
+        this.endDate
       ).subscribe(
         (data) => {
           this.reviewDownloadService.handleDownload(data, "reviews.xlsx");

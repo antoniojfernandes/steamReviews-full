@@ -76,7 +76,7 @@
 .row {
   display: flex;
   align-items: center;
-  padding-left: 25%;
+  padding-left: 10%;
   padding-bottom: 1%;
 }
 
@@ -90,11 +90,12 @@
   padding: .375rem .75rem;
   border: 1px solid #ced4da;
   border-radius: .25rem;
+  background-color: white;
 }
 
 .col-label {
   padding-right: 10px;
-  width: 10%;
+  width: 20%;
 }
 
 .col-select {
@@ -104,7 +105,7 @@
 .get-started {
   font-size: 15px;
   padding-top: 3%;
-  width:100%;
+  width: 100%;
   text-align: center;
 }
 
@@ -118,4 +119,85 @@
   border: 1px solid white;
   cursor: pointer;
   transition: background-color 0.3s ease;
+}
+
+/* Ensure the date picker input matches the existing form controls */
+.mat-datepicker-input {
+  width: 90%;
+  padding: .375rem .75rem;
+  border: 1px solid #ced4da;
+  border-radius: .25rem;
+  color: black; /* Text color */
+  background-color: white; /* Transparent background */
+}
+
+/* Style the date picker toggle button */
+.mat-datepicker-toggle {
+  color: white; /* Icon color */
+}
+
+/* Date picker styles */
+::ng-deep .mat-calendar {
+  background-color: white !important; /* Background color of the calendar */
+  color: black !important; /* Text color in the calendar */
+  width: 200px !important; /* Reduce width */
+  height: auto !important; /* Allow height to adjust dynamically */
+}
+
+::ng-deep .mat-calendar-header {
+  background-color: white !important; /* Header background */
+  color: black !important; /* Header text color */
+  padding: 4px !important; /* Reduce padding */
+  font-size: 12px !important; /* Reduce font size */
+}
+
+::ng-deep .mat-calendar-body {
+  background-color: white !important; /* Body background */
+  color: black !important; /* Body text color */
+}
+
+::ng-deep .mat-calendar-body-cell {
+  width: 24px !important; /* Reduce cell width */
+  height: 24px !important; /* Reduce cell height */
+  line-height: 24px !important; /* Center text vertically */
+}
+
+::ng-deep .mat-calendar-body-cell-content {
+  font-size: 10px !important; /* Reduce font size */
+  color: black !important; /* Date text color */
+  background-color: white !important; /* Cell background */
+}
+
+::ng-deep .mat-calendar-body-selected {
+  background-color: #000000 !important; /* Selected date background */
+  color: white !important; /* Selected date text color */
+  width: 20px !important; /* Reduce selected date width */
+  height: 20px !important; /* Reduce selected date height */
+  line-height: 20px !important; /* Center text vertically */
+}
+
+::ng-deep .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover > .mat-calendar-body-cell-content {
+  background-color: #e0e0e0 !important; /* Light gray hover background */
+  color: black !important; /* Hover text color */
+  width: 20px !important; /* Reduce hover width */
+  height: 20px !important; /* Reduce hover height */
+  line-height: 20px !important; /* Center text vertically */
+}
+
+::ng-deep .mat-calendar-arrow {
+  width: 8px !important; /* Reduce arrow size */
+  height: 8px !important; /* Reduce arrow size */
+}
+
+::ng-deep .mat-calendar-previous-button,
+::ng-deep .mat-calendar-next-button {
+  width: 24px !important; /* Reduce button width */
+  height: 24px !important; /* Reduce button height */
+  line-height: 24px !important; /* Center icon vertically */
+}
+
+::ng-deep .mat-calendar-previous-button svg,
+::ng-deep .mat-calendar-next-button svg {
+  width: 12px !important; /* Reduce icon size */
+  height: 12px !important; /* Reduce icon size */
 }

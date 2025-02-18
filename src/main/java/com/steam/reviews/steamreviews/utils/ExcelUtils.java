@@ -1,166 +1,130 @@
 package com.steam.reviews.steamreviews.utils;
 
 import com.steam.reviews.steamreviews.domain.QuerySummary;
+import com.steam.reviews.steamreviews.domain.Review;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import com.steam.reviews.steamreviews.domain.Review;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.time.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import static com.steam.reviews.steamreviews.utils.Utils.formatTimestamp;
+import static com.steam.reviews.steamreviews.utils.Utils.parsePlaytime;
 
 public class ExcelUtils {
 
     public void exportToExcelWithSummary(List<String> criteria, List<Review> reviews, QuerySummary summary, String gameName, OutputStream outputStream) throws IOException {
         try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+            // Create the Reviews sheet
             Sheet reviewsSheet = workbook.createSheet("Reviews for " + gameName);
             setupSheet(reviewsSheet, criteria.size() + 2);
-            Row header = reviewsSheet.createRow(0);
-            createHeader(header, criteria);
+            createHeaderRow(reviewsSheet.createRow(0), criteria);
 
-            CellStyle style = workbook.createCellStyle();
-            style.setWrapText(true);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            // Create a reusable cell style
+            CellStyle cellStyle = createWrapTextStyle(workbook);
 
-            for (int rowNbr = 1; rowNbr <= reviews.size(); rowNbr++) {
-                Row row = reviewsSheet.createRow(rowNbr);
-                populateRow(row, reviews.get(rowNbr - 1), style, formatter, criteria);
-            }
+            // Populate the Reviews sheet with review data
+            populateReviewsSheet(reviewsSheet, reviews, criteria, cellStyle);
 
+            // Create the Summary sheet
             Sheet summarySheet = workbook.createSheet("Query Summary for " + gameName);
-            Row summaryHeader = summarySheet.createRow(0);
-            Cell summaryHeaderCell = summaryHeader.createCell(0);
-            summaryHeaderCell.setCellValue("Query Summary");
+            createSummarySheet(summarySheet, summary);
 
-            Row summaryRow = summarySheet.createRow(1);
-            Cell summaryCell = summaryRow.createCell(0);
-            summaryCell.setCellValue(summary.toString());
-
+            // Write the workbook to the output stream
             workbook.write(outputStream);
         }
     }
 
-
-    private void setupSheet(Sheet sheet, int criteriaSize) {
-        for (int rowNbr = 0; rowNbr < criteriaSize; rowNbr++) {
-            sheet.setColumnWidth(rowNbr, 6000);
+    private void setupSheet(Sheet sheet, int columnCount) {
+        for (int i = 0; i < columnCount; i++) {
+            sheet.setColumnWidth(i, 6000);
         }
     }
 
-    private void createHeader(Row header, List<String> criteria) {
+    private void createHeaderRow(Row headerRow, List<String> criteria) {
         for (int i = 0; i < criteria.size(); i++) {
-            Cell headerCell = header.createCell(i);
+            Cell headerCell = headerRow.createCell(i);
             headerCell.setCellValue(criteria.get(i));
         }
     }
 
-    private void populateRow(Row row, Review review, CellStyle style, DateTimeFormatter formatter, List<String> criteria) {
+    private CellStyle createWrapTextStyle(Workbook workbook) {
+        CellStyle style = workbook.createCellStyle();
+        style.setWrapText(true);
+        return style;
+    }
 
-        Cell cell = row.createCell(criteria.indexOf("Review"));
-        cell.setCellValue(review.getReview());
-        cell.setCellStyle(style);
+    private void populateReviewsSheet(Sheet sheet, List<Review> reviews, List<String> criteria, CellStyle cellStyle) {
+        // Map criteria to their corresponding data extraction functions
+        Map<String, Function<Review, Object>> criteriaMappers = createCriteriaMappers();
 
-        cell = row.createCell(criteria.indexOf("Language"));
-        cell.setCellValue(review.getLanguage());
-        cell.setCellStyle(style);
+        for (int rowIndex = 0; rowIndex < reviews.size(); rowIndex++) {
+            Row row = sheet.createRow(rowIndex + 1); // +1 to skip the header row
+            Review review = reviews.get(rowIndex);
 
-        if (criteria.contains("Author's playtime last two weeks")) {
-            cell = row.createCell(criteria.indexOf("Author's playtime last two weeks"));
-            cell.setCellValue(Math.round(Double.parseDouble(review.getAuthor().getPlaytime_last_two_weeks()) / 6) / 10.0);
-            cell.setCellStyle(style);
+            for (int colIndex = 0; colIndex < criteria.size(); colIndex++) {
+                String criterion = criteria.get(colIndex);
+                Function<Review, Object> mapper = criteriaMappers.get(criterion);
+
+                if (mapper != null) {
+                    Object value = mapper.apply(review);
+                    createCell(row, colIndex, value, cellStyle);
+                }
+            }
         }
+    }
 
-        if (criteria.contains("Author's last played")) {
-            cell = row.createCell(criteria.indexOf("Author's last played"));
-            cell.setCellValue(LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(review.getAuthor().getLast_played())), ZoneId.systemDefault()).format(formatter));
-            cell.setCellStyle(style);
+    private Map<String, Function<Review, Object>> createCriteriaMappers() {
+        Map<String, Function<Review, Object>> criteriaMappers = new HashMap<>();
+        criteriaMappers.put("Review", Review::getReview);
+        criteriaMappers.put("Language", Review::getLanguage);
+        criteriaMappers.put("Does the reviewer play mostly on steam deck", Review::getPrimarly_steam_deck);
+        criteriaMappers.put("Developer's response", Review::getDeveloper_response);
+        criteriaMappers.put("Reviewer purchased the game on Steam", Review::getSteam_purchase);
+        criteriaMappers.put("Review voted up", Review::getVoted_up);
+        criteriaMappers.put("Review votes up", Review::getVotes_up);
+        criteriaMappers.put("Votes funny", Review::getVotes_funny);
+        criteriaMappers.put("Helpfulness score", Review::getWeighted_vote_score);
+        criteriaMappers.put("Reviewer got the game for free", Review::getReceived_for_free);
+        criteriaMappers.put("Review during early access", Review::getWritten_during_early_access);
+        criteriaMappers.put("Developer's response date", review -> formatTimestamp(review.getTimestamp_dev_responded()));
+        criteriaMappers.put("Author's last played", review -> formatTimestamp(review.getAuthor().getLast_played()));
+        criteriaMappers.put("Author's playtime at review", review -> parsePlaytime(review.getAuthor().getPlaytime_at_review()));
+        criteriaMappers.put("Author's playtime last two weeks", review -> parsePlaytime(review.getAuthor().getPlaytime_last_two_weeks()));
+        criteriaMappers.put("Author's playtime forever", review -> parsePlaytime(review.getAuthor().getPlaytime_forever()));
+        criteriaMappers.put("Review creation date", review -> formatTimestamp(review.getTimestamp_created()));
+        criteriaMappers.put("Review update date", review -> formatTimestamp(review.getTimestamp_updated()));
+
+        return criteriaMappers;
+    }
+
+    private void createCell(Row row, int colIndex, Object value, CellStyle cellStyle) {
+        Cell cell = row.createCell(colIndex);
+        if (value != null) {
+            if (value instanceof String) {
+                cell.setCellValue((String) value);
+            } else if (value instanceof Number) {
+                cell.setCellValue(((Number) value).doubleValue());
+            } else if (value instanceof Boolean) {
+                cell.setCellValue((Boolean) value);
+            }
         }
+        cell.setCellStyle(cellStyle);
+    }
 
-        if (criteria.contains("Does the reviewer play mostly on steam deck")) {
-            cell = row.createCell(criteria.indexOf("Does the reviewer play mostly on steam deck"));
-            cell.setCellValue(review.getPrimarly_steam_deck());
-            cell.setCellStyle(style);
-        }
+    private void createSummarySheet(Sheet sheet, QuerySummary summary) {
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Query Summary");
 
-        if (criteria.contains("Developer's response date") && review.getTimestamp_dev_responded() != null) {
-            cell = row.createCell(criteria.indexOf("Developer's response date"));
-            cell.setCellValue(LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(review.getTimestamp_dev_responded())), ZoneId.systemDefault()).format(formatter));
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Developer's response")) {
-            cell = row.createCell(criteria.indexOf("Developer's response"));
-            cell.setCellValue(review.getDeveloper_response());
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Reviewer purchased the game on Steam")) {
-            cell = row.createCell(criteria.indexOf("Reviewer purchased the game on Steam"));
-            cell.setCellValue(review.getSteam_purchase());
-            cell.setCellStyle(style);
-        }
-
-
-        if (criteria.contains("Author's playtime forever")) {
-            cell = row.createCell(criteria.indexOf("Author's playtime forever"));
-            cell.setCellValue(Math.round(Double.parseDouble(review.getAuthor().getPlaytime_forever()) / 6) / 10.0);
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Review creation date")) {
-            cell = row.createCell(criteria.indexOf("Review creation date"));
-            cell.setCellValue(LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(review.getTimestamp_created())), ZoneId.systemDefault()).format(formatter));
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Review update date")) {
-            cell = row.createCell(criteria.indexOf("Review update date"));
-            cell.setCellValue(LocalDateTime.ofInstant(Instant.ofEpochSecond(Long.parseLong(review.getTimestamp_updated())), ZoneId.systemDefault()).format(formatter));
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Review voted up")) {
-            cell = row.createCell(criteria.indexOf("Review voted up"));
-            cell.setCellValue(review.getVoted_up());
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Review votes up")) {
-            cell = row.createCell(criteria.indexOf("Review votes up"));
-            cell.setCellValue(review.getVotes_up());
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Votes funny")) {
-            cell = row.createCell(criteria.indexOf("Votes funny"));
-            cell.setCellValue(review.getVotes_funny());
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Helpfulness score")) {
-            cell = row.createCell(criteria.indexOf("Helpfulness score"));
-            cell.setCellValue(review.getWeighted_vote_score());
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Reviewer got the game for free")) {
-            cell = row.createCell(criteria.indexOf("Reviewer got the game for free"));
-            cell.setCellValue(review.getReceived_for_free());
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Review during early access")) {
-            cell = row.createCell(criteria.indexOf("Review during early access"));
-            cell.setCellValue(review.getWritten_during_early_access());
-            cell.setCellStyle(style);
-        }
-
-        if (criteria.contains("Author's playtime at review") && review.getAuthor().getPlaytime_at_review() != null) {
-            cell = row.createCell(criteria.indexOf("Author's playtime at review"));
-            cell.setCellValue(Math.round(Double.parseDouble(review.getAuthor().getPlaytime_at_review()) / 6) / 10.0);
-            cell.setCellStyle(style);
-        }
+        Row summaryRow = sheet.createRow(1);
+        summaryRow.createCell(0).setCellValue(summary.toString());
     }
 }

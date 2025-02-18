@@ -26,7 +26,7 @@
         <label for="reviewSelect" class="labels">Review Type:</label>
       </div>
       <div class="col-select">
-        <select id="reviewSelect" class="form-control" [(ngModel)]="selectedreviewType"
+        <select id="reviewSelect" class="form-control" [(ngModel)]="selectedReviewType"
                 name="reviewType">
           <option *ngFor="let reviewType of reviewTypes" [value]="reviewType.value">{{ reviewType.display}}</option>
         </select>
@@ -53,6 +53,24 @@
       </div>
       <div class="col-select">
         <input type="number" [(ngModel)]="minChars" class="form-control" min="0">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-label">
+        <label for="startDate" class="labels">Start Date:</label>
+      </div>
+      <div class="col-select">
+        <input matInput [matDatepicker]="startPicker" id="startDate" [(ngModel)]="startDate" class="form-control">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker [@transformPanel] #startPicker></mat-datepicker>
+      </div>
+      <div class="col-label">
+        <label for="endDate" class="labels">End Date:</label>
+      </div>
+      <div class="col-select">
+        <input matInput [matDatepicker]="endPicker" id="endDate" [(ngModel)]="endDate" class="form-control">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker [@transformPanel] #endPicker></mat-datepicker>
       </div>
     </div>
   </div>

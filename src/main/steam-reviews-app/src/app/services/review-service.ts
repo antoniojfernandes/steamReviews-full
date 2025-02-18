@@ -12,15 +12,7 @@ export class ReviewService {
   constructor(private http: HttpClient) {
   }
 
-  downloadReviews(gameName: string,
-                  gameId: number,
-                  criteriaList: string[],
-                  selectedLang: string,
-                  selectedFilter: string,
-                  selectedreviewType: string,
-                  minChars: number,
-                  maxChars: number,
-                  pages: number): Observable<Blob> {
+  downloadReviews(gameName: string, gameId: number, criteriaList: string[], selectedLang: string, selectedFilter: string, selectedReviewType: string, minChars: number, maxChars: number, pages: number, startDate: Date, endDate: Date): Observable<Blob> {
     const criteriaListStr = criteriaList.join(',')
     const params = new HttpParams()
       .set('gameName', gameName)
@@ -28,10 +20,12 @@ export class ReviewService {
       .set('criteriaList', criteriaListStr)
       .set('selectedLang', selectedLang)
       .set('selectedFilter', selectedFilter)
-      .set('selectedreviewType', selectedreviewType)
+      .set('selectedReviewType', selectedReviewType)
       .set('minChars', minChars)
       .set('maxChars', maxChars)
-      .set('pages', pages);
+      .set('pages', pages)
+      .set('startDate', startDate.toLocaleDateString())
+      .set('endDate', endDate.toLocaleDateString());
 
     return this.http.get('http://localhost:8080/download-reviews', {
       responseType: 'blob',

@@ -15,6 +15,7 @@ export class FilterPageComponent {
   gameName: string = "";
   gameId: number = 0;
 
+  //TODO need a better way to send this to backend
   criteriaList: string[] = [
     "Author's playtime forever", "Author's playtime at review", "Author's last played", "Author's playtime last two weeks",
     "Review creation date", "Review update date", "Review voted up", "Votes funny", "Review votes up", "Helpfulness score",
@@ -39,6 +40,10 @@ export class FilterPageComponent {
     return this.selectedCriteria.includes(criteria);
   }
 
+  allSelected(): boolean {
+    return this.selectedCriteria === this.criteriaList;
+  }
+
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.gameName = params['name'];
@@ -51,5 +56,13 @@ export class FilterPageComponent {
       return;
     }
     this.dataService.changeCriteria(this.selectedCriteria);
+  }
+
+  selectAll() {
+    if (this.allSelected()) {
+      this.selectedCriteria = []
+    } else {
+      this.selectedCriteria = this.criteriaList;
+    }
   }
 }

@@ -12,5 +12,5 @@ public class Author implements Serializable {
     public String playtime_forever;
     public String playtime_last_two_weeks;
     public String playtime_at_review;
-    public String last_played;
+    public Long last_played;
 }
