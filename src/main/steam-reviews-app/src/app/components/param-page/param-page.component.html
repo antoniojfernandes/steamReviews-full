@@ -1,0 +1,66 @@
+<app-background></app-background>
+<div class="main-page">
+  <div class="title">{{ gameName }}</div>
+  <div class="title2">Now, adjust your params.</div>
+
+  <div class="filter-container">
+    <div class="row">
+      <div class="col-label">
+        <label for="filterSelect" class="labels">Review Update Status:</label>
+      </div>
+      <div class="col-select">
+        <select id="filterSelect" class="form-control" [(ngModel)]="selectedFilter"
+                name="filter">
+          <option *ngFor="let filter of filters" [value]="filter.value">{{ filter.display }}</option>
+        </select>
+      </div>
+      <div class="col-label">
+        <label class="labels">Number of pages (1 page = 100 reviews):</label>
+      </div>
+      <div class="col-select">
+        <input type="number" [(ngModel)]="pages" class="form-control" min="1">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-label">
+        <label for="reviewSelect" class="labels">Review Type:</label>
+      </div>
+      <div class="col-select">
+        <select id="reviewSelect" class="form-control" [(ngModel)]="selectedreviewType"
+                name="reviewType">
+          <option *ngFor="let reviewType of reviewTypes" [value]="reviewType.value">{{ reviewType.display}}</option>
+        </select>
+      </div>
+      <div class="col-label">
+        <label class="labels">Max characters for review (-1 means no limit):</label>
+      </div>
+      <div class="col-select">
+        <input type="number" [(ngModel)]="maxChars" class="form-control" min="-1">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-label">
+        <label for="langSelect" class="labels">Language:</label>
+      </div>
+      <div class="col-select">
+        <select id="langSelect" class="form-control" [(ngModel)]="selectedLang"
+                name="lang">
+          <option *ngFor="let lang of langs" [value]="lang.value">{{ lang.display }}</option>
+        </select>
+      </div>
+      <div class="col-label">
+        <label class="labels">Min characters for review:</label>
+      </div>
+      <div class="col-select">
+        <input type="number" [(ngModel)]="minChars" class="form-control" min="0">
+      </div>
+    </div>
+  </div>
+  <div class="get-started">
+    <button class="get-started-btn" (click)="downloadFile()">Get review!</button>
+  </div>
+
+</div>
+<div class="back">
+  <button class="back-btn" routerLink="/select-params/{{gameName}}/{{gameId}}">Back</button>
+</div>

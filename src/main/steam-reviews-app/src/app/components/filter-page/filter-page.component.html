@@ -1,0 +1,25 @@
+<app-background></app-background>
+<div class="main-page">
+  <div class="title">{{ gameName }}</div>
+  <div class="title2">Select the fields you want in your review.</div>
+  <div class="title3">On the next page you can adjust some parameters.</div>
+
+  <div class="criteria-list">
+    <div class="criteria-grid">
+      <button
+        *ngFor="let criteria of criteriaList"
+        (click)="toggleSelection(criteria)"
+        [ngClass]="{'selected': isSelected(criteria)}"
+        class="criteria-button">
+        {{criteria}}
+      </button>
+    </div>
+  </div>
+</div>
+<div class="back">
+  <button class="back-btn" routerLink="/search-game/{{gameName}}/{{gameId}}">Back</button>
+</div>
+<div class="next">
+  <button class="next-btn" (click)="move()" routerLink="/customize-params/{{gameName}}/{{gameId}}">Next</button>
+</div>
+

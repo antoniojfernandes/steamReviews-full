@@ -1,0 +1,107 @@
+.main-page {
+  position: absolute; /* Position the review component absolutely */
+  top: 45%; /* Move the component down by 50% of the container's height */
+  left: 50%; /* Move the component right by 50% of the container's width */
+  transform: translate(-50%, -50%); /* Center the component precisely */
+  z-index: 10; /* Ensure the review component is above the main page */
+  height: 70%;
+  width: 80%;
+}
+
+.title2 {
+  font-size: 30px;
+  font-weight: bold;
+  font-family: "Roboto Light";
+  background: white;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+
+.title3 {
+  font-size: 15px;
+  padding-top: 5px;
+  font-weight: bold;
+  font-family: "Roboto Light";
+  background: rgba(255, 255, 255, 0.67);
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+
+.back {
+  position: absolute; /* Position the review component absolutely */
+  top: 90%; /* Move the component down by 50% of the container's height */
+  left: 4%; /* Move the component right by 50% of the container's width */
+  z-index: 10; /* Ensure the review component is above the main page */
+}
+
+.back-btn {
+  padding: 13px 25px;
+  font-size: 15px;
+  color: white;
+  font-weight: bolder;
+  text-align: center;
+  font-family: "Roboto Light";
+  background: black;
+  border-radius: 25px;
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+.title {
+  font-size: 60px;
+  font-weight: bold;
+  width: 100%;
+  background: linear-gradient(to right, #FF1CF7, #00F0FF);
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+
+.next {
+  position: absolute; /* Position the review component absolutely */
+  top: 90%; /* Move the component down by 50% of the container's height */
+  left: 93%; /* Move the component right by 50% of the container's width */
+  z-index: 10; /* Ensure the review component is above the main page */
+}
+
+.next-btn {
+  padding: 13px 25px;
+  font-size: 15px;
+  color: white;
+  font-weight: bolder;
+  text-align: center;
+  font-family: "Roboto Light";
+  background: black;
+  border-radius: 25px;
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+.criteria-list {
+  padding-top: 5%;
+  padding-left: 15%;
+  width: 70%; /* Ensure full width */
+}
+
+.criteria-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two equal-width columns */
+  gap: 10px; /* Gap between grid items */
+}
+
+.criteria-button {
+  padding: 10px;
+  border-radius: 20px; /* Round edges */
+  border: 1px solid white;
+  cursor: pointer;
+  background-color: black; /* Light grey as default */
+  color: white;
+  width: 100%; /* Buttons should take full width of their grid cell */
+}
+
+.criteria-button.selected {
+  background-color: #4747da; /* Blue color when selected */
+  color: white;
+}

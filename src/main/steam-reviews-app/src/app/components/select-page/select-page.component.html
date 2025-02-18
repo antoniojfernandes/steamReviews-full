@@ -1,0 +1,26 @@
+<app-background></app-background>
+<div class="main-page">
+  <div class="title">Search for your game<br/>
+    <div class="title2">and select it.</div>
+  </div>
+  <div class="game-name">
+    <input [placeholder]="isFocused ? '' : 'Search your game'"
+           (focus)="isFocused = true"
+           (blur)="isFocused = false"
+           [(ngModel)]="game"
+           type="text" class="game-name-btn"
+           (keyup.enter)="findGamesByName()"
+    >
+  </div>
+  <div class="image-container">
+    <div class="image-box" *ngFor="let image of images">
+      <a [routerLink]="['/select-params', image.name, image.id]">
+        <img [src]="image.imageUrl" alt="Image">
+        <div class="image-name">{{ image.name }}</div>
+      </a>
+    </div>
+  </div>
+</div>
+<div class="back">
+  <button class="back-btn" routerLink="/">Back</button>
+</div>

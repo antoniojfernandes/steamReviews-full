@@ -1,0 +1,48 @@
+.main-page {
+    position: absolute; /* Position the review component absolutely */
+    top: 40%; /* Move the component down by 50% of the container's height */
+    left: 60%; /* Move the component right by 50% of the container's width */
+    transform: translate(-50%, -50%); /* Center the component precisely */
+    z-index: 10; /* Ensure the review component is above the main page */
+    height: 70%;
+    width: 60%;
+}
+
+.title {
+    font-size: 60px;
+    font-weight: bold;
+    width: 70%;
+    background: linear-gradient(to right, #FF1CF7, #00F0FF);
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-align: center;
+}
+
+.description {
+    padding-top: 8%;
+    font-size: 15px;
+    width: 72%;
+    line-height: 1.5; /* Space between lines */
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+    font-family: "Roboto Light";
+}
+
+.get-started {
+    font-size: 15px;
+    padding-top: 15%;
+    width: 72%;
+    text-align: center;
+}
+
+.get-started-btn {
+    padding: 13px 25px;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: "Roboto Light";
+    background: black;
+    border-radius: 25px;
+    border: 1px solid white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
